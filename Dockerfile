@@ -3,11 +3,11 @@
 ARG arch=armhf
 
 # REQUIRED getting base image for nextcloud
-FROM nextcloud:latest
+FROM nextcloud:apache
 
 # OPTIONAL
-RUN apt-get update && apt-get install -y procps smbclient && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -y && apt-get install -y procps smbclient && rm -rf /var/lib/apt/lists/*
 
 # REQUIRED only runs when container starts
 # CMD ["echo", "hello world!"]
-CMD /bin/bash
+# CMD /bin/bash
