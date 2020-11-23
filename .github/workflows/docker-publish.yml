@@ -68,7 +68,7 @@ jobs:
 
     steps:
       - name: checkout for build
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
 
       - name: Set up Docker Buildx for build
         uses: docker/setup-buildx-action@v1
