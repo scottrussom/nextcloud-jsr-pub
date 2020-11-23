@@ -46,8 +46,9 @@ jobs:
             cat /proc/sys/fs/binfmt_misc/qemu-aarch64
             docker buildx create --use --name mybuilder
             docker buildx ls
-            docker buildx build . --file Dockerfile --platform linux/amd64,linux/arm/v7,linux/arm64
             set +x
+            echo "Running docker buildx build . --file Dockerfile --platform linux/amd64,linux/arm/v7,linux/arm64"
+            docker buildx build . --file Dockerfile --platform linux/amd64,linux/arm/v7,linux/arm64
             echo "************* JSR Test End *************"
           fi
   # docker build . --file Dockerfile

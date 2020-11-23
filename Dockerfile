@@ -17,7 +17,6 @@ FROM ${ARCH}debian:buster-slim
 
 RUN apt-get update \
 && apt-get install -y curl \
-&& docker --version \
 && arch \
 && whoami \
 && rm -rf /var/lib/apt/lists/*
