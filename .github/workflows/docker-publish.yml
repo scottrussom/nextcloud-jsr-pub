@@ -34,14 +34,18 @@ jobs:
             docker-compose --file docker-compose.test.yml run sut
           else
             echo "************* JSR Test Begin *************"
+            set -x
+            echo "DOCKER_CLI_EXPERIMENTAL=$DOCKER_CLI_EXPERIMENTAL"
             arch
             whoami
             docker --version
             docker buildx version
-            docker run --rm --privileged docker/binfmt
+            docker buildx ls
+            docker run --rm --privileged linuxkit/binfmt:v0.8
             ls -al /proc/sys/fs/binfmt_misc/
             cat /proc/sys/fs/binfmt_misc/qemu-aarch64
             docker buildx build . --file Dockerfile --platform linux/amd64,linux/arm/v7,linux/arm64
+            set +x
             echo "************* JSR Test End *************"
           fi
   # docker build . --file Dockerfile
