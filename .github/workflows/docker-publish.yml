@@ -16,6 +16,7 @@ on:
 env:
   # TODO: Change variable to your image's name.
   IMAGE_NAME: nextcloud-jsr
+  DOCKER_CLI_EXPERIMENTAL: enabled
 
 jobs:
   # Run tests.
@@ -32,8 +33,14 @@ jobs:
             docker-compose --file docker-compose.test.yml build
             docker-compose --file docker-compose.test.yml run sut
           else
-            docker build . --file Dockerfile
+            echo "************* JSR Test Begin *************"
+            docker buildx version
+            ls -al /proc/sys/fs/binfmt_misc/
+            cat /proc/sys/fs/binfmt_misc/qemu-aarch64
+            docker buildx build . --file Dockerfile --platform linux/amd64,linux/arm/v7,linux/arm64
+            echo "************* JSR Test End *************"
           fi
+  # docker build . --file Dockerfile
 
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
@@ -48,7 +55,8 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME
+        run: docker buildx build . --file Dockerfile --tag $IMAGE_NAME --platform linux/amd64,linux/arm/v7,linux/arm64
+        # run: docker build . --file Dockerfile --tag $IMAGE_NAME
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
