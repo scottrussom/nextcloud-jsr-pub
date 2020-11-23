@@ -44,6 +44,8 @@ jobs:
             docker run --rm --privileged linuxkit/binfmt:v0.8
             ls -al /proc/sys/fs/binfmt_misc/
             cat /proc/sys/fs/binfmt_misc/qemu-aarch64
+            docker buildx create --use --name mybuilder
+            docker buildx ls
             docker buildx build . --file Dockerfile --platform linux/amd64,linux/arm/v7,linux/arm64
             set +x
             echo "************* JSR Test End *************"
