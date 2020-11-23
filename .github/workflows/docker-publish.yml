@@ -2,9 +2,9 @@ name: Docker
 
 on:
   push:
-    # Publish `master` as Docker `latest` image.
+    # Publish `$default-branch` as Docker `latest` image.
     branches:
-      - master
+      - $default-branch
 
     # Publish `v1.2.3` tags as releases.
     tags:
@@ -16,7 +16,7 @@ on:
 env:
   # TODO: Change variable to your image's name.
   IMAGE_NAME: nextcloud-jsr
-  DOCKER_CLI_EXPERIMENTAL: enabled
+  # DOCKER_CLI_EXPERIMENTAL: enabled
 
 jobs:
   # Run tests.
@@ -25,7 +25,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: checkout for test
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx for test
+        uses: docker/setup-buildx-action@v1
 
       - name: Run tests
         run: |
@@ -41,11 +45,11 @@ jobs:
             docker --version
             docker buildx version
             docker buildx ls
-            docker run --rm --privileged linuxkit/binfmt:v0.8
-            ls -al /proc/sys/fs/binfmt_misc/
-            cat /proc/sys/fs/binfmt_misc/qemu-aarch64
-            docker buildx create --use --name mybuilder
-            docker buildx ls
+            # docker run --rm --privileged linuxkit/binfmt:v0.8
+            # ls -al /proc/sys/fs/binfmt_misc/
+            # cat /proc/sys/fs/binfmt_misc/qemu-aarch64
+            # docker buildx create --use --name mybuilder
+            # docker buildx ls
             set +x
             echo "Running docker buildx build . --file Dockerfile --platform linux/amd64,linux/arm/v7,linux/arm64"
             docker buildx build . --file Dockerfile --platform linux/amd64,linux/arm/v7,linux/arm64
@@ -63,7 +67,11 @@ jobs:
     if: github.event_name == 'push'
 
     steps:
+      - name: checkout for build
       - uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx for build
+        uses: docker/setup-buildx-action@v1
 
       - name: Build image
         run: docker buildx build . --file Dockerfile --tag $IMAGE_NAME --platform linux/amd64,linux/arm/v7,linux/arm64
@@ -86,7 +94,7 @@ jobs:
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
 
           # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && VERSION=latest
+          [ "$VERSION" == "$default-branch" ] && VERSION=latest
 
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
